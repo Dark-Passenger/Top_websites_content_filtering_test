@@ -10,7 +10,7 @@ website_list = "top-1m.csv"
 filename = "results.csv"
 cert_path = "SQTerminator.der"
 websites = reader(open(website_list))
-results = writer(open(filename,"w"), dialect='excel')
+results = writer(open(filename,"w",newline=''))
 proxy = {
     'http':'10.11.11.1:3128',
     'https':'10.11.11.1:3128'
