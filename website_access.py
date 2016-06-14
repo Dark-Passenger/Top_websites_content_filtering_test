@@ -7,6 +7,7 @@ website_list = "websites.txt"
 filename = "results.txt"
 cert_path = "SQTerminator.der"
 results = open(filename,'w')
+proxy = {'http':'http://10.11.11.1:3128'}
 
 #Start calculating program running time
 start_time = datetime.now().replace(microsecond=0)
@@ -27,9 +28,8 @@ for website in open(website_list,'r'):
 
     name = "http://"+website
     try :    
-	webpage = get(name) # verify verify works else use cert=
-    	#webpage = get(name, verify = cert_path)
-    	#webpage = get(name, cert = cert_path)
+	webpage = get(name)	#No proxy
+	webpage = get(name, proxies=proxy)	#with proxy enabled
     	site_map = fromstring(webpage.content)
     	website_counter = website_counter+1
     
