@@ -21,13 +21,12 @@ proxy = {
     'https':'10.11.11.1:3128'
     }
 
-#Start calculating program running time
-start_time = datetime.now().replace(microsecond=0)
-
 #setup counters
 website_counter = 0
 blocked_counter = 0
 not_blocked_counter = 0
+error_counter = 0
+response_time = []
 
 def Stats():
     if name == 'nt':
@@ -36,27 +35,32 @@ def Stats():
         system('clear')
     end_time = datetime.now().replace(microsecond=0)
     duration = end_time - start_time
+    avg_response_time = sum(response_time)/len(response_time)
     print("\n\t\t--Statistics--\n")
     print("Total running time :\t\t", duration)
     print("Total websites accessed :\t", website_counter)
     print("Total websites blocked :\t", blocked_counter)
     print("Total websites not blocked :\t", not_blocked_counter)
+    print("Totol websites closed with error :\t",error_counter)
+    print("Average Response time :\t",avg_response_time)
 
 #Header block
-results.writerow( ["WEBSITE NAME", "STATUS", "BLOCKED SITE", "CATEGORY"])
+results.writerow( ["WEBSITE NAME", "STATUS", "BLOCKED SITE", "CATEGORY", "RESPONSE TIME"])
 
 start_row = int(input("Starting row number: "))
 end_row = int(input("Ending row number: "))
+
+#Start calculating program running time
+start_time = datetime.now().replace(microsecond=0)
 
 for website in islice(websites, start_row, end_row):
 
     website_name = "http://"+website[1]
     website_counter = website_counter+1
     try :    
-        webpage = get(website_name, proxies=proxy) # verify verify works else use cert=
-        #webpage = get(name, verify = cert_path)
-        #webpage = get(name, cert = cert_path)
+        webpage = get(website_name, proxies=proxy)
         site_map = fromstring(webpage.content)
+        response_time.append(webpage.elapsed.microseconds)
     
         try:
             #Sites blocked
@@ -68,20 +72,20 @@ for website in islice(websites, start_row, end_row):
     
         except IndexError as e:
             #Oops sites not blocked
-            result = "--"
+            result = "Not Blocked"
             site = "--"
             category = "--"
             not_blocked_counter = not_blocked_counter + 1
 
     except ConnectionError :
     #Oops sites not blocked
-        result = "not blocked"
-        site = ""
-        category = ""
-        not_blocked_counter = not_blocked_counter + 1
+        result = "Error"
+        site = "--"
+        category = "--"
+        error_counter = error_counter + 1
 
     #Dumping into the file to have a report at the end
-    results.writerow([website[1], result, site, category])
+    results.writerow([website[1], result, site, category,response_time[-1])
 
     if website_counter % 10 == 0:
         Stats()
