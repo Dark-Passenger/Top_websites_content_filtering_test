@@ -10,7 +10,6 @@ from os import system, name
 
 website_list = "top-1m.csv"
 filename = "results.csv"
-cert_path = "SQTerminator.der"
 websites = reader(open(website_list))
 if version_info.major == 3:
     results = writer(open(filename,"w",newline=''))
