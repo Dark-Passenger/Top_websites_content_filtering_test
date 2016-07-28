@@ -1,16 +1,21 @@
+from __future__ import print_function, division
+from sys import version_info
 from requests import get
 from lxml.html import fromstring
 from datetime import datetime
 from requests.exceptions import ConnectionError
 from csv import writer, reader
 from itertools import islice
-import os
+from os import system, name
 
 website_list = "top-1m.csv"
 filename = "results.csv"
 cert_path = "SQTerminator.der"
 websites = reader(open(website_list))
-results = writer(open(filename,"w",newline=''))
+if version_info.major == 3:
+    results = writer(open(filename,"w",newline=''))
+else:
+    results = writer(open(filename,"w"))
 proxy = {
     'http':'10.11.11.1:3128',
     'https':'10.11.11.1:3128'
@@ -25,10 +30,10 @@ blocked_counter = 0
 not_blocked_counter = 0
 
 def Stats():
-    if os.name == 'nt':
-        os.system('cls')
+    if name == 'nt':
+        system('cls')
     else:
-        os.system('clear')
+        system('clear')
     end_time = datetime.now().replace(microsecond=0)
     duration = end_time - start_time
     print("\n\t\t--Statistics--\n")
@@ -45,13 +50,13 @@ end_row = int(input("Ending row number: "))
 
 for website in islice(websites, start_row, end_row):
 
-    name = "http://"+website[1]
+    website_name = "http://"+website[1]
+    website_counter = website_counter+1
     try :    
-        webpage = get(name, proxies=proxy) # verify verify works else use cert=
+        webpage = get(website_name, proxies=proxy) # verify verify works else use cert=
         #webpage = get(name, verify = cert_path)
         #webpage = get(name, cert = cert_path)
         site_map = fromstring(webpage.content)
-        website_counter = website_counter+1
     
         try:
             #Sites blocked
